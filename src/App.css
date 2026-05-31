@@ -5,7 +5,7 @@
   --ios-secondary-text: #86868b;
   --ios-card-bg: rgba(255, 255, 255, 0.72);
   --ios-card-border: rgba(255, 255, 255, 0.3);
-  --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --sf-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -19,28 +19,31 @@ body {
   font-family: var(--sf-font);
   background-color: var(--ios-bg);
   color: var(--ios-text);
-  line-height: 1.5;
-  overflow-x: hidden;
+  line-height: 1.47059;
+  font-weight: 400;
+  letter-spacing: -0.022em;
 }
 
 .glass {
   background: var(--ios-card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
   border: 1px solid var(--ios-card-border);
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 22px;
 }
 
+/* Header / Nav */
 header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
-  height: 60px;
+  width: 100%;
+  z-index: 9999;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,110 +51,167 @@ header {
 
 nav {
   display: flex;
-  gap: 30px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ios-secondary-text);
+  gap: 34px;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.8);
 }
 
 nav a {
   text-decoration: none;
   color: inherit;
-  transition: color 0.2s;
+  opacity: 0.8;
+  transition: opacity 0.2s;
 }
 
 nav a:hover {
-  color: var(--ios-text);
+  opacity: 1;
 }
 
+/* Hero Section */
 .hero {
-  padding: 120px 0 80px;
+  padding-top: 150px;
+  padding-bottom: 100px;
   text-align: center;
 }
 
 .hero h1 {
-  font-size: 64px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 20px;
-  background: linear-gradient(180deg, #1d1d1f 0%, #434344 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 80px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  margin-bottom: 15px;
 }
 
 .hero p {
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: 500;
   color: var(--ios-secondary-text);
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
+  line-height: 1.1;
+}
+
+/* Sections */
+section {
+  padding: 80px 0;
 }
 
 .section-title {
-  font-size: 40px;
-  font-weight: 700;
-  margin-bottom: 40px;
-  letter-spacing: -0.01em;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  margin-bottom: 80px;
-}
-
-.card {
-  border-radius: 20px;
-  padding: 32px;
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.card:hover {
-  transform: scale(1.02);
-}
-
-.project-card h3 {
-  font-size: 24px;
-  margin-bottom: 12px;
-}
-
-.tag {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 100px;
-  background: #e8e8ed;
-  font-size: 12px;
+  font-size: 48px;
   font-weight: 600;
-  margin-right: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 40px;
+  letter-spacing: -0.003em;
 }
 
-.blue-link {
-  color: var(--ios-blue);
-  text-decoration: none;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+/* Bento Grid for Projects */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
-.blue-link:hover {
-  text-decoration: underline;
-}
-
-.skill-pill {
-  background: white;
-  padding: 12px 20px;
-  border-radius: 14px;
-  font-weight: 500;
+.bento-card {
+  border-radius: 28px;
+  padding: 40px;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 400px;
+  transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-@media (max-width: 768px) {
-  .hero h1 { font-size: 48px; }
-  .hero p { font-size: 20px; }
-  .section-title { font-size: 32px; }
+.bento-card:hover {
+  transform: scale(1.01);
+}
+
+.bento-card h3 {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.bento-card ul {
+  list-style: none;
+  margin-bottom: 24px;
+}
+
+.bento-card li {
+  font-size: 17px;
+  color: var(--ios-secondary-text);
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.bento-card li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--ios-blue);
+}
+
+/* Experience List */
+.exp-item {
+  border-bottom: 1px solid #d2d2d7;
+  padding: 30px 0;
+}
+
+.exp-item:last-child {
+  border-bottom: none;
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.exp-header h3 { font-size: 24px; font-weight: 600; }
+.exp-role { font-size: 19px; color: var(--ios-blue); font-weight: 500; margin-bottom: 15px; }
+.exp-date { font-size: 17px; color: var(--ios-secondary-text); }
+
+/* Skill Groups */
+.skill-section {
+  background: white;
+  border-radius: 30px;
+  padding: 60px;
+  margin-bottom: 40px;
+}
+
+.skill-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid #f5f5f7;
+}
+
+.skill-row:last-child { border-bottom: none; }
+
+.skill-category { font-size: 17px; font-weight: 600; width: 30%; }
+.skill-list { font-size: 17px; color: var(--ios-secondary-text); width: 70%; }
+
+/* Achievement Rings Style */
+.achieve-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.achieve-card {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  text-align: center;
+}
+
+.achieve-value { font-size: 40px; font-weight: 700; color: var(--ios-blue); margin-bottom: 5px; }
+.achieve-label { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ios-secondary-text); }
+
+@media (max-width: 834px) {
+  .hero h1 { font-size: 56px; }
+  .bento-grid { grid-template-columns: 1fr; }
+  .skill-row { flex-direction: column; gap: 10px; }
+  .skill-category, .skill-list { width: 100%; }
+  .achieve-grid { grid-template-columns: 1fr; }
 }
