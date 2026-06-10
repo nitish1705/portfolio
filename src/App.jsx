@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import './index.css';
@@ -34,7 +34,7 @@ function App() {
     // Note: You need to set up your EmailJS service ID, template ID, and public key in your EmailJS dashboard.
     // Replace these placeholders with your actual keys when you have them.
     emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', form.current, 'YOUR_PUBLIC_KEY')
-      .then((result) => {
+      .then(() => {
           setStatus('Message Sent!');
           setIsSending(false);
           form.current.reset();
@@ -51,8 +51,8 @@ function App() {
   const data = {
     name: "Nitish M",
     role: "iOS & Mobile Engineer",
-    tagline: "Computer Science Student @ SJIT",
-    about: "I am a Computer Science student at St. Joseph’s Institute of Technology, specializing in building high-performance mobile applications and exploring cyber security. With expertise in SwiftUI and SwiftData, I focus on creating seamless user experiences and robust system-level utilities.",
+    tagline: "Final Year Student @ SJIT",
+    about: "I am a final year Computer Science student at St. Joseph’s Institute of Technology who enjoys building apps and learning new frameworks as I go. My focus is on turning ideas into clean, useful products with strong fundamentals in programming, mobile development, web development, and product thinking.",
     education: {
       degree: "B.E. Computer Science Engineering",
       org: "St. Joseph’s Institute of Technology",
@@ -68,8 +68,7 @@ function App() {
     ],
     marquee: ["SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Java", "React Native", "SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Java", "React Native"],
     experience: [
-      { role: "Web Application VAPT Intern", org: "Supraja Technologies", date: "Jul 2025" },
-      { role: "Cyber Security Intern", org: "Prodigy Infotech", date: "Aug 2024" }
+      { role: "Internship Experience", org: "Supraja Technologies", date: "Jul 2025" }
     ],
     projects: [
       {
@@ -95,7 +94,6 @@ function App() {
     certifications: [
       "NPTEL: Python for Data Science",
       "Introduction to Programming in C",
-      "Ethical Hacking & Cyber Security Workshop (L1)",
       "Networking Basics"
     ],
     socials: [
@@ -114,9 +112,6 @@ function App() {
       <header className="editorial-header">
         <div className="top-bar">
           <div className="portfolio-tag">PORTFOLIO / {new Date().getFullYear()}</div>
-          <a href="/Nitish_Resume.pdf" download="Nitish_Resume.pdf" className="download-link">
-            DOWNLOAD CV
-          </a>
         </div>
         <div className="role-bar">
           <div className="role-dot"></div>
@@ -128,32 +123,23 @@ function App() {
       <section id="hero" style={{ paddingTop: '20px' }}>
         <motion.div initial="initial" animate="animate" variants={stagger} className="hero-layout">
           <div>
-            <motion.div variants={fadeIn} className="hero-status top-left">
-              <div className="status-dot-container">
-                <div className="status-dot-pulse"></div>
-                <div className="status-dot"></div>
-              </div>
-              Available for Internship
-            </motion.div>
-            <motion.h1 variants={fadeIn} style={{ fontSize: '100px', marginBottom: '20px' }}>{data.name}</motion.h1>
-            <motion.p variants={fadeIn} className="accent-text" style={{ fontSize: '24px', marginBottom: '40px', maxWidth: '600px', lineHeight: '1.2' }}>
-              Building high-performance mobile applications & securing the digital landscape.
+            <motion.h1 variants={fadeIn} className="hero-name">{data.name}</motion.h1>
+            <motion.p variants={fadeIn} className="accent-text" style={{ fontSize: '24px', marginBottom: '18px', maxWidth: '640px', lineHeight: '1.2' }}>
+              {data.tagline}
             </motion.p>
-            <motion.div variants={fadeIn} className="socials-list">
-              {data.socials.map(s => (
-                <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="social-btn">{s.name}</a>
-              ))}
-            </motion.div>
+            <motion.p variants={fadeIn} style={{ fontSize: '18px', marginBottom: '40px', maxWidth: '640px', lineHeight: '1.7', color: 'var(--gray-medium)' }}>
+              {data.about}
+            </motion.p>
           </div>
           
           <motion.div variants={fadeIn} className="side-info-list">
             <div className="side-info-item">
-              <span className="side-label">AVAILABLE</span>
-              <span className="side-value">Open to roles & freelance</span>
+              <span className="side-label">CURRENTLY</span>
+              <span className="side-value">Final Year Student @ SJIT</span>
             </div>
             <div className="side-info-item">
-              <span className="side-label">CURRENTLY</span>
-              <span className="side-value">B.E. CSE Student @ SJIT</span>
+              <span className="side-label">FOCUS</span>
+              <span className="side-value">Building apps and learning new frameworks</span>
             </div>
             <div className="side-info-item">
               <span className="side-label">EDUCATION</span>
@@ -336,8 +322,26 @@ function App() {
         </motion.div>
       </section>
 
-      <footer style={{ marginTop: '100px', textAlign: 'center', color: 'var(--gray-medium)', fontSize: '14px' }}>
-        © {new Date().getFullYear()} {data.name} • Designed for Impact
+      <footer className="page-footer">
+        <div className="footer-brand">
+          <div className="portfolio-tag">PORTFOLIO / {new Date().getFullYear()}</div>
+          <div style={{ color: 'white', fontSize: '18px', fontWeight: 700 }}>{data.name}</div>
+        </div>
+
+        <div className="footer-links">
+          {data.socials.map((s) => (
+            <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="footer-link">
+              {s.name}
+            </a>
+          ))}
+          <a href="/Nitish_Resume.pdf" download="Nitish_Resume.pdf" className="footer-link">
+            Download CV
+          </a>
+        </div>
+
+        <div style={{ color: 'var(--gray-medium)', fontSize: '14px' }}>
+          © {new Date().getFullYear()} {data.name} • Designed for Impact
+        </div>
       </footer>
     </div>
   );
