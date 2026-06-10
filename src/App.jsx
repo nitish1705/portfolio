@@ -110,17 +110,34 @@ function App() {
     <div className="container">
       <div className="bg-glow"></div>
 
+      {/* EDITORIAL HEADER */}
+      <header className="editorial-header">
+        <div className="top-bar">
+          <div className="portfolio-tag">PORTFOLIO / {new Date().getFullYear()}</div>
+          <a href="/Nitish_Resume.pdf" download="Nitish_Resume.pdf" className="download-link">
+            DOWNLOAD CV
+          </a>
+        </div>
+        <div className="role-bar">
+          <div className="role-dot"></div>
+          <span>iOS Engineer • FULL STACK DEVELOPER • SOFTWARE ENGINEER</span>
+        </div>
+      </header>
+
       {/* HERO SECTION */}
-      <section id="hero">
+      <section id="hero" style={{ paddingTop: '20px' }}>
         <motion.div initial="initial" animate="animate" variants={stagger} className="hero-layout">
           <div>
-            <motion.div variants={fadeIn} className="hero-status">
-              <span className="status-dot"></span>
+            <motion.div variants={fadeIn} className="hero-status top-left">
+              <div className="status-dot-container">
+                <div className="status-dot-pulse"></div>
+                <div className="status-dot"></div>
+              </div>
               Available for Internship
             </motion.div>
-            <motion.h1 variants={fadeIn}>{data.name}</motion.h1>
-            <motion.p variants={fadeIn} className="accent-text" style={{ fontSize: '24px', marginBottom: '30px' }}>
-              {data.role} — {data.tagline}
+            <motion.h1 variants={fadeIn} style={{ fontSize: '100px', marginBottom: '20px' }}>{data.name}</motion.h1>
+            <motion.p variants={fadeIn} className="accent-text" style={{ fontSize: '24px', marginBottom: '40px', maxWidth: '600px', lineHeight: '1.2' }}>
+              Building high-performance mobile applications & securing the digital landscape.
             </motion.p>
             <motion.div variants={fadeIn} className="socials-list">
               {data.socials.map(s => (
@@ -129,18 +146,18 @@ function App() {
             </motion.div>
           </div>
           
-          <motion.div variants={fadeIn} className="hero-info-card">
-            <div className="info-item">
-              <span className="info-label">Based in</span>
-              <span className="info-value">Chennai, India</span>
+          <motion.div variants={fadeIn} className="side-info-list">
+            <div className="side-info-item">
+              <span className="side-label">AVAILABLE</span>
+              <span className="side-value">Open to roles & freelance</span>
             </div>
-            <div className="info-item">
-              <span className="info-label">Education</span>
-              <span className="info-value">B.E. Computer Science @ SJIT</span>
+            <div className="side-info-item">
+              <span className="side-label">CURRENTLY</span>
+              <span className="side-value">B.E. CSE Student @ SJIT</span>
             </div>
-            <div className="info-item">
-              <span className="info-label">Expertise</span>
-              <span className="info-value">iOS, Swift, Cyber Security</span>
+            <div className="side-info-item">
+              <span className="side-label">EDUCATION</span>
+              <span className="side-value">B.E. Computer Science Engineering</span>
             </div>
           </motion.div>
         </motion.div>
