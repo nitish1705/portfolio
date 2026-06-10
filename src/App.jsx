@@ -1,169 +1,329 @@
-import './App.css'
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
+import './index.css';
+
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+};
+
+const stagger = {
+  animate: { transition: { staggerChildren: 0.05 } }
+};
 
 function App() {
-  const projects = [
-    {
-      title: "MultiClips",
-      role: "macOS Engineer",
-      details: [
-        "Engineered a native macOS clipboard manager utilizing Swift and SwiftUI to efficiently monitor, capture, and organize system-wide clipboard events.",
-        "Architected a responsive, adaptive interface with custom SwiftUI animations, ensuring seamless background execution and user interaction.",
-        "Integrated SwiftData for robust local data persistence, optimizing the storage, retrieval, and state management of extensive clipboard history."
-      ],
-      tags: ["Swift", "SwiftUI", "SwiftData", "macOS"],
-      link: "https://github.com/nitish1705"
+  const [copied, setCopied] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [status, setStatus] = useState('');
+  const form = useRef();
+  const emailAddress = "mnitish1705@gmail.com";
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(emailAddress);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+    setIsSending(true);
+    setStatus('Sending...');
+
+    // Note: You need to set up your EmailJS service ID, template ID, and public key in your EmailJS dashboard.
+    // Replace these placeholders with your actual keys when you have them.
+    emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', form.current, 'YOUR_PUBLIC_KEY')
+      .then((result) => {
+          setStatus('Message Sent!');
+          setIsSending(false);
+          form.current.reset();
+          setTimeout(() => setStatus(''), 3000);
+      }, (error) => {
+          // If you haven't set up EmailJS yet, this will fail. 
+          // I've added a fallback message so you know it's working but needs keys.
+          setStatus('Config needed!'); 
+          setIsSending(false);
+          console.log('EmailJS Error:', error.text);
+      });
+  };
+
+  const data = {
+    name: "Nitish M",
+    role: "iOS & Mobile Engineer",
+    tagline: "Computer Science Student @ SJIT",
+    about: "I am a Computer Science student at St. Joseph’s Institute of Technology, specializing in building high-performance mobile applications and exploring cyber security. With expertise in SwiftUI and SwiftData, I focus on creating seamless user experiences and robust system-level utilities.",
+    education: {
+      degree: "B.E. Computer Science Engineering",
+      org: "St. Joseph’s Institute of Technology",
+      date: "2023 – 2027",
+      cgpa: "8.55 / 10"
     },
-    {
-      title: "GPACALC",
-      role: "iOS Developer",
-      details: [
-        "Developed a dynamic academic utility application using SwiftUI to accurately compute and track semester-wise GPA and CGPA.",
-        "Implemented efficient local data storage utilizing SwiftData to maintain persistent academic records, enabling real-time edits and state recalculations.",
-        "Designed a modular component architecture to optimize rendering performance and ensure a highly responsive, student-friendly user experience."
-      ],
-      tags: ["SwiftUI", "SwiftData", "iOS"],
-      link: "https://github.com/nitish1705"
-    }
-  ]
-
-  const experiences = [
-    {
-      company: "Supraja Technologies",
-      role: "Web Application VAPT Intern",
-      date: "Jul 2025",
-      points: [
-        "Conducted Web Application Vulnerability Assessment & Penetration Testing to identify and mitigate critical security flaws.",
-        "Developed encryption utilities and packet analyzers across 12 practical security tasks."
-      ]
-    },
-    {
-      company: "Prodigy Infotech",
-      role: "Cyber Security Intern",
-      date: "Aug 2024",
-      points: [
-        "Implemented cryptographic algorithms and system-level security utilities.",
-        "Built a packet analyzer for network traffic inspection and security testing."
-      ]
-    }
-  ]
-
-  const skills = [
-    { category: "Programming", items: "Python, Java, Swift, MySQL" },
-    { category: "Mobile Frameworks", items: "SwiftUI, React Native, SwiftData, Android SDK, NativeWind (CSS)" },
-    { category: "Developer Tools", items: "Xcode, Figma, VS Code, Android Studio, Git, MySQL Workbench" }
-  ]
-
-  const achievements = [
-    { value: "500+", label: "LeetCode Solved" },
-    { value: "1st", label: "SSN CTRL+ESCAPE" },
-    { value: "1100+", label: "SkillRack Problems" },
-    { value: "1209", label: "Codeforces (Pupil)" },
-    { value: "Winner", label: "Iron Code Relay" },
-    { value: "679", label: "AtCoder Rank" }
-  ]
+    arsenal: [
+      { id: "01", category: "Languages", items: "Python / Java / Swift / C / SQL" },
+      { id: "02", category: "Frontend", items: "React / HTML5 / CSS3 / Tailwind / NativeWind" },
+      { id: "03", category: "Backend", items: "Node.js / Express / MySQL / REST APIs / PHP" },
+      { id: "04", category: "Mobile Dev", items: "SwiftUI / SwiftData / React Native / Android SDK" },
+      { id: "05", category: "Tools & Frameworks", items: "Git / VS Code / Xcode / Android Studio / Figma" }
+    ],
+    marquee: ["SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Java", "React Native", "SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Java", "React Native"],
+    experience: [
+      { role: "Web Application VAPT Intern", org: "Supraja Technologies", date: "Jul 2025" },
+      { role: "Cyber Security Intern", org: "Prodigy Infotech", date: "Aug 2024" }
+    ],
+    projects: [
+      {
+        name: "MultiClips",
+        desc: "Native macOS clipboard manager utilizing Swift and SwiftUI to monitor, capture, and organize system-wide clipboard events with SwiftData persistence.",
+        tech: ["Swift", "SwiftUI", "SwiftData"],
+        link: "https://github.com/nitish1705"
+      },
+      {
+        name: "GPACALC",
+        desc: "Dynamic academic utility for iOS to compute and track semester-wise GPA/CGPA with real-time recalculations and modular component architecture.",
+        tech: ["SwiftUI", "SwiftData", "iOS"],
+        link: "https://github.com/nitish1705"
+      }
+    ],
+    achievements: [
+      { label: "LeetCode Solved", value: "500+", color: "var(--accent-1)", link: "https://leetcode.com/u/Nitish_17_M/" },
+      { label: "SSN Winner", value: "1st Place", color: "var(--accent-2)", link: "https://github.com/nitish1705" },
+      { label: "SkillRack", value: "1100+", color: "var(--accent-3)", link: "http://www.skillrack.com/faces/resume.xhtml?id=447801&key=nitish1705" },
+      { label: "Codeforces", value: "1209", color: "#66ff66", link: "https://codeforces.com/profile/Ninja_1705" },
+      { label: "AtCoder Rank", value: "679", color: "#ffcc00", link: "https://atcoder.jp/users/Nitish_M" }
+    ],
+    certifications: [
+      "NPTEL: Python for Data Science",
+      "Introduction to Programming in C",
+      "Ethical Hacking & Cyber Security Workshop (L1)",
+      "Networking Basics"
+    ],
+    socials: [
+      { name: "GitHub", url: "https://github.com/nitish1705" },
+      { name: "LinkedIn", url: "https://www.linkedin.com/in/nitish--m/" },
+      { name: "Email", url: "mailto:mnitish1705@gmail.com" },
+      { name: "Leetcode", url: "https://leetcode.com/u/Nitish_17_M/" }
+    ]
+  };
 
   return (
-    <div className="app">
-      <header className="glass">
-        <nav>
-          <a href="#projects">Projects</a>
-          <a href="#experience">Experience</a>
-          <a href="#skills">Skills</a>
-          <a href="#achievements">Achievements</a>
-        </nav>
-      </header>
+    <div className="container">
+      <div className="bg-glow"></div>
 
-      <main className="container">
-        <section className="hero">
-          <h1>Nitish M</h1>
-          <p>iOS Engineer & Computer Science Student at St. Joseph’s Institute of Technology. Specializing in high-performance SwiftUI applications.</p>
-          <div style={{ marginTop: '30px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
-            <a href="mailto:mnitish1705@gmail.com" className="blue-link" style={{ fontSize: '18px' }}>Email</a>
-            <a href="https://linkedin.com/in/nitish-m" className="blue-link" style={{ fontSize: '18px' }}>LinkedIn</a>
-            <a href="https://github.com/nitish1705" className="blue-link" style={{ fontSize: '18px' }}>GitHub</a>
+      {/* HERO SECTION */}
+      <section id="hero">
+        <motion.div initial="initial" animate="animate" variants={stagger} className="hero-layout">
+          <div>
+            <motion.div variants={fadeIn} className="hero-status">
+              <span className="status-dot"></span>
+              Available for Internship
+            </motion.div>
+            <motion.h1 variants={fadeIn}>{data.name}</motion.h1>
+            <motion.p variants={fadeIn} className="accent-text" style={{ fontSize: '24px', marginBottom: '30px' }}>
+              {data.role} — {data.tagline}
+            </motion.p>
+            <motion.div variants={fadeIn} className="socials-list">
+              {data.socials.map(s => (
+                <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="social-btn">{s.name}</a>
+              ))}
+            </motion.div>
           </div>
-        </section>
+          
+          <motion.div variants={fadeIn} className="hero-info-card">
+            <div className="info-item">
+              <span className="info-label">Based in</span>
+              <span className="info-value">Chennai, India</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">Education</span>
+              <span className="info-value">B.E. Computer Science @ SJIT</span>
+            </div>
+            <div className="info-item">
+              <span className="info-label">Expertise</span>
+              <span className="info-value">iOS, Swift, Cyber Security</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      </section>
 
-        <section id="projects">
-          <h2 className="section-title">Projects</h2>
-          <div className="bento-grid">
-            {projects.map((project, i) => (
-              <div key={i} className="bento-card glass">
+      {/* ARSENAL SECTION */}
+      <section id="arsenal">
+        <div className="arsenal-header">
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h2 className="arsenal-title">My Arsenal</h2>
+          </div>
+          <div style={{ fontSize: '12px', letterSpacing: '0.2em', color: 'var(--gray-medium)' }}>STACK</div>
+        </div>
+
+        <div className="arsenal-marquee">
+          <div className="marquee-content">
+            {data.marquee.map((item, i) => (
+              <span key={i} className="marquee-item">
+                {item} {i < data.marquee.length - 1 && <span className="diamond"></span>}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="stack-list">
+          {data.arsenal.map((row) => (
+            <motion.div 
+              key={row.id} 
+              className="stack-row"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="stack-row-num">{row.id}</div>
+              <div className="stack-category">{row.category}</div>
+              <div className="stack-items">{row.items}</div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ABOUT & QUICK STATS */}
+      <section id="about" style={{ paddingTop: '150px' }}>
+        <div className="section-label">About & Overview</div>
+        <motion.div className="bento-grid" initial="initial" whileInView="animate" variants={stagger} viewport={{ once: true }}>
+          <motion.div className="bento-item col-8" variants={fadeIn}>
+            <h3>The Story</h3>
+            <p style={{ fontSize: '18px', lineHeight: '1.7' }}>{data.about}</p>
+          </motion.div>
+          <motion.div className="bento-item col-4" variants={fadeIn} style={{ background: 'var(--accent-gradient)', color: 'black' }}>
+            <h3 style={{ color: 'rgba(0,0,0,0.6)' }}>Current GPA</h3>
+            <div className="stat-val">{data.education.cgpa}</div>
+            <p style={{ color: 'rgba(0,0,0,0.8)', marginTop: '10px' }}>Maintaining excellence at SJIT</p>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* PROJECTS SECTION */}
+      <section id="projects">
+        <div className="section-label">Selected Works</div>
+        <motion.div className="bento-grid" initial="initial" whileInView="animate" variants={stagger} viewport={{ once: true }}>
+          {data.projects.map((p, i) => (
+            <motion.div key={i} className="bento-item col-6" variants={fadeIn}>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                {p.tech.map(t => <span key={t} className="tag">{t}</span>)}
+              </div>
+              <h3>{p.name}</h3>
+              <p style={{ marginBottom: '20px' }}>{p.desc}</p>
+              <a href={p.link} target="_blank" rel="noreferrer" className="accent-text" style={{ textDecoration: 'none' }}>Explore Code ↗</a>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* EXPERIENCE & CERTIFICATIONS */}
+      <section id="experience">
+        <div className="section-label">Professional Journey</div>
+        <motion.div className="bento-grid" initial="initial" whileInView="animate" variants={stagger} viewport={{ once: true }}>
+          <motion.div className="bento-item col-8" variants={fadeIn}>
+            <h3>Experience</h3>
+            {data.experience.map((exp, i) => (
+              <div key={i} className="exp-row">
                 <div>
-                  <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--ios-blue)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{project.role}</span>
-                  <h3>{project.title}</h3>
-                  <ul>
-                    {project.details.map((detail, j) => (
-                      <li key={j}>{detail}</li>
-                    ))}
-                  </ul>
+                  <div style={{ fontWeight: 700, fontSize: '18px' }}>{exp.role}</div>
+                  <div style={{ color: 'var(--gray-medium)' }}>{exp.org}</div>
                 </div>
-                <div>
-                  <div style={{ marginBottom: '20px' }}>
-                    {project.tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
-                  </div>
-                  <a href={project.link} className="blue-link">Explore Code →</a>
-                </div>
+                <div className="accent-text">{exp.date}</div>
               </div>
             ))}
-          </div>
-        </section>
+          </motion.div>
+          <motion.div className="bento-item col-4" variants={fadeIn}>
+            <h3>Certifications</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
+              {data.certifications.map(c => (
+                <div key={c} style={{ fontSize: '14px', borderLeft: '2px solid var(--accent-3)', paddingLeft: '12px' }}>{c}</div>
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
+      </section>
 
-        <section id="experience">
-          <h2 className="section-title">Professional Experience</h2>
-          <div className="glass" style={{ borderRadius: '30px', padding: '0 40px' }}>
-            {experiences.map((exp, i) => (
-              <div key={i} className="exp-item">
-                <div className="exp-header">
-                  <h3>{exp.company}</h3>
-                  <span className="exp-date">{exp.date}</span>
-                </div>
-                <p className="exp-role">{exp.role}</p>
-                <ul style={{ listStyle: 'none' }}>
-                  {exp.points.map((point, j) => (
-                    <li key={j} style={{ fontSize: '17px', color: 'var(--ios-secondary-text)', marginBottom: '8px', position: 'relative', paddingLeft: '20px' }}>
-                      <span style={{ position: 'absolute', left: 0, color: '#d2d2d7' }}>•</span>
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
+      {/* ACHIEVEMENTS */}
+      <section id="achievements">
+        <div className="section-label">Milestones</div>
+        <motion.div className="bento-grid" initial="initial" whileInView="animate" variants={stagger} viewport={{ once: true }}>
+          {data.achievements.map((ach, i) => (
+            <motion.a 
+              key={i} 
+              href={ach.link} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="bento-item col-3" 
+              variants={fadeIn} 
+              style={{ textAlign: 'center', textDecoration: 'none', cursor: 'pointer' }}
+            >
+              <div className="stat-val" style={{ color: ach.color, marginBottom: '8px' }}>{ach.value}</div>
+              <div style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--gray-medium)' }}>{ach.label}</div>
+            </motion.a>
+          ))}
+        </motion.div>
+      </section>
 
-        <section id="skills">
-          <h2 className="section-title">Skills & Tech Stack</h2>
-          <div className="skill-section glass">
-            {skills.map((group, i) => (
-              <div key={i} className="skill-row">
-                <div className="skill-category">{group.category}</div>
-                <div className="skill-list">{group.items}</div>
-              </div>
-            ))}
+      {/* CONTACT */}
+      <section id="contact">
+        <motion.div 
+          className="bento-item col-12" 
+          initial="initial" 
+          whileInView="animate" 
+          variants={fadeIn} 
+          style={{ textAlign: 'center', padding: '80px 40px', background: 'var(--purple-gradient)', color: 'white' }}
+        >
+          <h1 style={{ fontSize: '60px', background: 'none', WebkitTextFillColor: 'white' }}>Get In Touch</h1>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '20px', marginBottom: '30px' }}>Feel free to reach out for collaborations or just a friendly hello!</p>
+          
+          <div className="email-ui-container">
+            <button className="email-btn" onClick={copyToClipboard}>
+              <span>{copied ? "Copied!" : "Copy Email"}</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+            <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}`} target="_blank" rel="noreferrer" className="email-btn secondary">
+              <span>Draft in Gmail</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </a>
           </div>
-        </section>
 
-        <section id="achievements" style={{ paddingBottom: '150px' }}>
-          <h2 className="section-title">Achievements</h2>
-          <div className="achieve-grid">
-            {achievements.map((ach, i) => (
-              <div key={i} className="achieve-card glass">
-                <div className="achieve-value">{ach.value}</div>
-                <div className="achieve-label">{ach.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
+          <form ref={form} onSubmit={sendEmail} className="contact-form">
+            <div className="form-group">
+              <label>Name</label>
+              <input type="text" name="user_name" className="form-input" placeholder="Your Name" required />
+            </div>
+            <div className="form-group">
+              <label>Email</label>
+              <input type="email" name="user_email" className="form-input" placeholder="Your Email" required />
+            </div>
+            <div className="form-group">
+              <label>Message</label>
+              <textarea name="message" className="form-input" rows="4" placeholder="How can I help you?" required style={{ resize: 'none' }}></textarea>
+            </div>
+            <button type="submit" disabled={isSending} className="send-btn">
+              {status || "Send Message"}
+            </button>
+          </form>
 
-      <footer style={{ padding: '60px 0', textAlign: 'center', borderTop: '1px solid #d2d2d7' }}>
-        <p style={{ color: 'var(--ios-secondary-text)', fontSize: '14px' }}>
-          © {new Date().getFullYear()} Nitish M. Designed with Apple Design Guidelines in mind.
-        </p>
+          <AnimatePresence>
+            {copied && (
+              <motion.div 
+                className="copy-toast"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+              >
+                Address added to clipboard
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </section>
+
+      <footer style={{ marginTop: '100px', textAlign: 'center', color: 'var(--gray-medium)', fontSize: '14px' }}>
+        © {new Date().getFullYear()} {data.name} • Designed for Impact
       </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
