@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
+import heroImage from './assets/hero.png';
 import './index.css';
 
 const fadeIn = {
@@ -19,6 +20,7 @@ function App() {
   const [status, setStatus] = useState('');
   const form = useRef();
   const emailAddress = "mnitish1705@gmail.com";
+  const resumeUrl = "/Nitish_Resume.pdf";
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(emailAddress);
@@ -51,7 +53,9 @@ function App() {
   const data = {
     name: "Nitish M",
     role: "iOS & Mobile Engineer",
+    headline: "I build polished mobile and web experiences with a focus on clean systems and thoughtful UI.",
     tagline: "Final Year Student @ SJIT",
+    location: "Chennai, India",
     about: "I am a final year Computer Science student at St. Joseph’s Institute of Technology who enjoys building apps and learning new frameworks as I go. My focus is on turning ideas into clean, useful products with strong fundamentals in programming, mobile development, web development, and product thinking.",
     education: {
       degree: "B.E. Computer Science Engineering",
@@ -112,8 +116,13 @@ function App() {
       <header className="editorial-header">
         <div className="top-bar">
           <div className="portfolio-tag">PORTFOLIO / {new Date().getFullYear()}</div>
+          <a href={resumeUrl} download="Nitish_Resume.pdf" className="ui-button ui-button--ghost top-download">
+            Download CV
+          </a>
         </div>
+        <div className="header-divider"></div>
         <div className="role-bar">
+          <span className="location-tag">{data.location}</span>
           <div className="role-dot"></div>
           <span>iOS Engineer • FULL STACK DEVELOPER • SOFTWARE ENGINEER</span>
         </div>
@@ -127,23 +136,38 @@ function App() {
             <motion.p variants={fadeIn} className="accent-text" style={{ fontSize: '24px', marginBottom: '18px', maxWidth: '640px', lineHeight: '1.2' }}>
               {data.tagline}
             </motion.p>
+            <motion.p variants={fadeIn} className="hero-headline">
+              {data.headline}
+            </motion.p>
             <motion.p variants={fadeIn} style={{ fontSize: '18px', marginBottom: '40px', maxWidth: '640px', lineHeight: '1.7', color: 'var(--gray-medium)' }}>
               {data.about}
             </motion.p>
           </div>
-          
-          <motion.div variants={fadeIn} className="side-info-list">
-            <div className="side-info-item">
-              <span className="side-label">CURRENTLY</span>
-              <span className="side-value">Final Year Student @ SJIT</span>
+
+          <motion.div variants={fadeIn} className="hero-visual">
+            <div className="hero-photo-card">
+              <div className="hero-photo-frame">
+                <img src={heroImage} alt="Nitish M" className="hero-photo" />
+              </div>
+              <div className="hero-photo-meta">
+                <span className="hero-photo-caption">Available for internships and freelance collaborations</span>
+                <span className="hero-photo-location">{data.location}</span>
+              </div>
             </div>
-            <div className="side-info-item">
-              <span className="side-label">FOCUS</span>
-              <span className="side-value">Building apps and learning new frameworks</span>
-            </div>
-            <div className="side-info-item">
-              <span className="side-label">EDUCATION</span>
-              <span className="side-value">B.E. Computer Science Engineering</span>
+
+            <div className="side-info-list">
+              <div className="side-info-item">
+                <span className="side-label">CURRENTLY</span>
+                <span className="side-value">Final Year Student @ SJIT</span>
+              </div>
+              <div className="side-info-item">
+                <span className="side-label">FOCUS</span>
+                <span className="side-value">Building apps and learning new frameworks</span>
+              </div>
+              <div className="side-info-item">
+                <span className="side-label">EDUCATION</span>
+                <span className="side-value">B.E. Computer Science Engineering</span>
+              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -212,7 +236,7 @@ function App() {
               </div>
               <h3>{p.name}</h3>
               <p style={{ marginBottom: '20px' }}>{p.desc}</p>
-              <a href={p.link} target="_blank" rel="noreferrer" className="accent-text" style={{ textDecoration: 'none' }}>Explore Code ↗</a>
+               <a href={p.link} target="_blank" rel="noreferrer" className="ui-button ui-button--ghost project-link">Explore Code ↗</a>
             </motion.div>
           ))}
         </motion.div>
@@ -279,11 +303,11 @@ function App() {
           <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '20px', marginBottom: '30px' }}>Feel free to reach out for collaborations or just a friendly hello!</p>
           
           <div className="email-ui-container">
-            <button className="email-btn" onClick={copyToClipboard}>
+            <button className="email-btn ui-button" onClick={copyToClipboard}>
               <span>{copied ? "Copied!" : "Copy Email"}</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
-            <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}`} target="_blank" rel="noreferrer" className="email-btn secondary">
+            <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}`} target="_blank" rel="noreferrer" className="email-btn secondary ui-button ui-button--ghost">
               <span>Draft in Gmail</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             </a>
@@ -302,7 +326,7 @@ function App() {
               <label>Message</label>
               <textarea name="message" className="form-input" rows="4" placeholder="How can I help you?" required style={{ resize: 'none' }}></textarea>
             </div>
-            <button type="submit" disabled={isSending} className="send-btn">
+            <button type="submit" disabled={isSending} className="send-btn ui-button">
               {status || "Send Message"}
             </button>
           </form>
@@ -330,11 +354,11 @@ function App() {
 
         <div className="footer-links">
           {data.socials.map((s) => (
-            <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="footer-link">
+            <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="footer-link ui-button ui-button--ghost">
               {s.name}
             </a>
           ))}
-          <a href="/Nitish_Resume.pdf" download="Nitish_Resume.pdf" className="footer-link">
+          <a href={resumeUrl} download="Nitish_Resume.pdf" className="footer-link ui-button">
             Download CV
           </a>
         </div>
