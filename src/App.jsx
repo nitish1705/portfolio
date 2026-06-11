@@ -130,7 +130,7 @@ function App() {
     name: "Nitish M",
     role: "iOS & Mobile Engineer",
     headline: "I build polished mobile and web experiences with a focus on clean systems and thoughtful UI.",
-    tagline: "Final Year Student @ SJIT",
+    tagline: "Final Year Student",
     location: "Chennai, India",
     about: "I am a final year Computer Science student at St. Joseph’s Institute of Technology who enjoys building apps and learning new frameworks as I go. My focus is on turning ideas into clean, useful products with strong fundamentals in programming, mobile development, web development, and product thinking.",
     education: {
@@ -570,7 +570,7 @@ function App() {
                 </div>
                 <div className="form-group">
                   <label>Message</label>
-                  <textarea name="message" className="form-input" rows="4" placeholder="How can I help you?" required style={{ resize: 'none' }}></textarea>
+                  <textarea name="message" className="form-input" rows="4" placeholder="How can I help you?" required style={{ resize: 'vertical', minHeight: '100px' }}></textarea>
                 </div>
                 <button type="submit" disabled={isSending} className="send-btn ui-button" style={{ width: '100%', marginTop: '20px' }}>
                   {status || "Send Message"}
