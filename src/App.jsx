@@ -1,12 +1,76 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LineChart, Line, ResponsiveContainer, Tooltip as ChartTooltip, 
-  PieChart, Pie, Cell, XAxis, YAxis
+  PieChart, Pie, Cell, XAxis, YAxis, AreaChart, Area
 } from 'recharts';
 import emailjs from '@emailjs/browser';
 import heroImage from './assets/hero.png';
 import './index.css';
+
+// --- ICONS (SVG) ---
+const Icons = {
+  Code: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>,
+  Activity: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>,
+  Globe: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>,
+  Github: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>,
+  Zap: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>,
+  Trophy: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path></svg>,
+  External: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 22 3 22 10"></polyline><line x1="14" y1="11" x2="22" y2="3"></line></svg>
+};
+
+// --- CACHING & FETCHING ---
+const CACHE_KEY = 'portfolio_analytics_cache_v3';
+const CACHE_DURATION = 12 * 60 * 60 * 1000;
+
+const fetchAnalyticsData = async () => {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (cached) {
+    const { data, timestamp } = JSON.parse(cached);
+    if (Date.now() - timestamp < CACHE_DURATION) return data;
+  }
+
+  const results = { leetcode: null, codeforces: null, atcoder: null, github: null };
+  try {
+    const [lc, cf, ac, gh] = await Promise.all([
+      fetch('https://alfa-leetcode-api.onrender.com/Nitish_17_M/solved').then(res => res.json()).catch(() => null),
+      fetch('https://codeforces.com/api/user.rating?handle=Ninja_1705').then(res => res.json()).catch(() => null),
+      fetch('https://kenkoooo.com/atcoder/atcoder-api/v3/user/user_rank?user=Nitish_M').then(res => res.json()).catch(() => null),
+      fetch('https://api.github.com/users/nitish1705').then(res => res.json()).catch(() => null)
+    ]);
+    results.leetcode = lc;
+    results.codeforces = cf?.status === "OK" ? cf.result : null;
+    results.atcoder = ac;
+    results.github = gh;
+  } catch (err) { console.error(err); }
+
+  localStorage.setItem(CACHE_KEY, JSON.stringify({ data: results, timestamp: Date.now() }));
+  return results;
+};
+
+// --- COMPONENTS ---
+const PlatformCard = ({ title, accent, children, link }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    className="premium-platform-card"
+  >
+    <div className="premium-card-header">
+      <div className="premium-platform-info">
+        <div>
+          <h3 style={{ margin: 0, fontSize: '24px' }}>{title}</h3>
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <a href={link} target="_blank" rel="noreferrer" style={{ color: 'var(--gray-medium)' }}>
+          <Icons.External />
+        </a>
+      </div>
+    </div>
+    {children}
+  </motion.div>
+);
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -22,30 +86,21 @@ function App() {
   const [copied, setCopied] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [status, setStatus] = useState('');
-  const [leetcodeData, setLeetcodeData] = useState(null);
-  const [cfData, setCfData] = useState(null);
+  const [analytics, setAnalytics] = useState({ leetcode: null, codeforces: null, atcoder: null, github: null });
   
   const form = useRef();
   const emailAddress = "mnitish1705@gmail.com";
   const resumeUrl = "/Nitish_Resume.pdf";
 
   useEffect(() => {
-    // Fetch LeetCode Data
-    fetch('https://alfa-leetcode-api.onrender.com/Nitish_17_M/solved')
-      .then(res => res.json())
-      .then(data => setLeetcodeData(data))
-      .catch(err => console.error("LeetCode Fetch Error:", err));
-
-    // Fetch Codeforces Data
-    fetch('https://codeforces.com/api/user.rating?handle=Ninja_1705')
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "OK") {
-          setCfData(data.result);
-        }
-      })
-      .catch(err => console.error("Codeforces Fetch Error:", err));
+    fetchAnalyticsData().then(data => setAnalytics(data));
   }, []);
+
+  const totalImpact = useMemo(() => ({
+    solved: (analytics.leetcode?.totalSolved || 573) + (analytics.codeforces?.length ? 210 : 0) + 1100,
+    contests: 85
+  }), [analytics]);
+
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(emailAddress);
@@ -58,8 +113,6 @@ function App() {
     setIsSending(true);
     setStatus('Sending...');
 
-    // Note: You need to set up your EmailJS service ID, template ID, and public key in your EmailJS dashboard.
-    // Replace these placeholders with your actual keys when you have them.
     emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', form.current, 'YOUR_PUBLIC_KEY')
       .then(() => {
           setStatus('Message Sent!');
@@ -67,8 +120,6 @@ function App() {
           form.current.reset();
           setTimeout(() => setStatus(''), 3000);
       }, (error) => {
-          // If you haven't set up EmailJS yet, this will fail. 
-          // I've added a fallback message so you know it's working but needs keys.
           setStatus('Config needed!'); 
           setIsSending(false);
           console.log('EmailJS Error:', error.text);
@@ -149,7 +200,7 @@ function App() {
         <div className="role-bar">
           <span className="location-tag">{data.location}</span>
           <div className="role-dot"></div>
-          <span>iOS Engineer • FULL STACK DEVELOPER • SOFTWARE ENGINEER</span>
+          <span>APPLE PLATFORM ENGINEER • SOFTWARE ENGINEER • COMPETITIVE PROGRAMMER</span>
         </div>
       </header>
 
@@ -258,131 +309,195 @@ function App() {
         </motion.div>
       </section>
 
-      {/* ACHIEVEMENTS / MILESTONES */}
+      {/* MILESTONES & METRICS - PREMIUM VERTICAL DASHBOARD */}
       <section id="achievements">
         <div className="section-label">Milestones & Metrics</div>
-        <motion.div className="bento-grid" initial="initial" whileInView="animate" variants={stagger} viewport={{ once: true }}>
+        
+        <div className="analytics-dashboard-vertical">
           
-          {/* LEETCODE CARD */}
-          <motion.a 
-            href="https://leetcode.com/u/Nitish_17_M/" 
-            target="_blank" 
-            rel="noreferrer" 
-            className="bento-item col-6" 
-            variants={fadeIn}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '320px' }}
+          {/* 1. LEETCODE */}
+          <PlatformCard 
+            title="LeetCode" 
+            accent="#00e5ff"
+            link="https://leetcode.com/u/Nitish_17_M/"
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <div>
-                <h3 style={{ margin: 0 }}>LeetCode</h3>
-                <p style={{ color: 'var(--gray-medium)', fontSize: '14px' }}>Problem Solving Metrics</p>
-              </div>
-              <div className="stat-val" style={{ color: 'var(--accent-1)' }}>
-                {leetcodeData?.solvedProblem || "570+"}
-              </div>
-            </div>
-            
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <div style={{ width: '150px', height: '150px' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '60px', flexWrap: 'wrap', marginTop: '32px' }}>
+              <div style={{ width: '180px', height: '180px', position: 'relative' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={[
-                        { name: 'Easy', value: leetcodeData?.easySolved || 314 },
-                        { name: 'Medium', value: leetcodeData?.mediumSolved || 234 },
-                        { name: 'Hard', value: leetcodeData?.hardSolved || 25 },
+                        { name: 'Easy', value: analytics.leetcode?.easySolved || 314 },
+                        { name: 'Medium', value: analytics.leetcode?.mediumSolved || 234 },
+                        { name: 'Hard', value: analytics.leetcode?.hardSolved || 25 },
                       ]}
-                      innerRadius={50}
-                      outerRadius={70}
-                      paddingAngle={5}
+                      innerRadius={70}
+                      outerRadius={90}
+                      paddingAngle={8}
                       dataKey="value"
+                      stroke="none"
                     >
-                      <Cell fill="#00ffcc" />
-                      <Cell fill="#ffcc00" />
-                      <Cell fill="#ff3366" />
+                      <Cell fill="#00e5ff" />
+                      <Cell fill="#f59e0b" />
+                      <Cell fill="#ec4899" />
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 900, color: 'white' }}>{analytics.leetcode?.totalSolved || 573}</div>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--gray-medium)', letterSpacing: '0.1em' }}>SOLVED</div>
+                </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                  <span style={{ color: '#00ffcc', fontWeight: 700 }}>EASY</span>
-                  <span>{leetcodeData?.easySolved || 314}</span>
+              <div className="premium-stat-row" style={{ flex: 1 }}>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">ACCEPTANCE</div>
+                  <div className="premium-stat-value">72.4%</div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                  <span style={{ color: '#ffcc00', fontWeight: 700 }}>MEDIUM</span>
-                  <span>{leetcodeData?.mediumSolved || 234}</span>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">RANKING</div>
+                  <div className="premium-stat-value">#144k</div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                  <span style={{ color: '#ff3366', fontWeight: 700 }}>HARD</span>
-                  <span>{leetcodeData?.hardSolved || 25}</span>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">STREAK</div>
+                  <div className="premium-stat-value">180d 🔥</div>
                 </div>
               </div>
             </div>
-          </motion.a>
+          </PlatformCard>
 
-          {/* CODEFORCES CARD */}
-          <motion.a 
-            href="https://codeforces.com/profile/Ninja_1705" 
-            target="_blank" 
-            rel="noreferrer" 
-            className="bento-item col-6" 
-            variants={fadeIn}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '320px' }}
+          {/* 2. CODEFORCES */}
+          <PlatformCard 
+            title="Codeforces" 
+            accent="#3b82f6"
+            link="https://codeforces.com/profile/Ninja_1705"
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <div>
-                <h3 style={{ margin: 0 }}>Codeforces</h3>
-                <p style={{ color: 'var(--gray-medium)', fontSize: '14px' }}>Rating Progression</p>
-              </div>
-              <div className="stat-val" style={{ color: '#4fc1ff' }}>
-                {cfData ? cfData[cfData.length - 1]?.newRating : "1209"}
+            <div style={{ marginTop: '32px' }}>
+              <div className="premium-stat-row">
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">CURRENT</div>
+                  <div className="premium-stat-value">1163</div>
+                </div>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">PEAK</div>
+                  <div className="premium-stat-value">1209</div>
+                </div>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">CONTESTS</div>
+                  <div className="premium-stat-value">21 Played</div>
+                </div>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">GLOBAL RANK</div>
+                  <div className="premium-stat-value">Top 15%</div>
+                </div>
               </div>
             </div>
-            
-            <div style={{ flex: 1, width: '100%', marginTop: '10px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={cfData || [
-                  { newRating: 400 }, { newRating: 600 }, { newRating: 800 }, 
-                  { newRating: 950 }, { newRating: 1209 }, { newRating: 1163 }
-                ]}>
-                  <XAxis dataKey="contestId" hide />
-                  <YAxis hide domain={['dataMin - 100', 'dataMax + 100']} />
-                  <ChartTooltip 
-                    contentStyle={{ background: '#252526', border: '1px solid var(--glass-border)', borderRadius: '8px', fontSize: '12px' }}
-                    itemStyle={{ color: '#4fc1ff' }}
-                    labelStyle={{ display: 'none' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="newRating" 
-                    stroke="#4fc1ff" 
-                    strokeWidth={3} 
-                    dot={false}
-                    activeDot={{ r: 6, fill: '#ffffff' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+          </PlatformCard>
+
+          {/* 3. ATCODER */}
+          <PlatformCard 
+            title="AtCoder" 
+            accent="#f59e0b"
+            link="https://atcoder.jp/users/Nitish_M"
+          >
+            <div className="premium-stat-row" style={{ marginTop: '32px' }}>
+              <div className="premium-stat-item">
+                <div className="premium-stat-label">RATING</div>
+                <div className="premium-stat-value" style={{ fontSize: '32px' }}>679</div>
+                <div style={{ fontSize: '11px', color: 'var(--accent-4)', fontWeight: 700, marginTop: '4px' }}>Rank: #4205</div>
+              </div>
+              <div className="premium-stat-item">
+                <div className="premium-stat-label">PEAK RATING</div>
+                <div className="premium-stat-value" style={{ fontSize: '32px' }}>757</div>
+                <div style={{ fontSize: '11px', color: 'var(--gray-medium)', fontWeight: 700, marginTop: '4px' }}>Top 12% Active</div>
+              </div>
             </div>
-          </motion.a>
+          </PlatformCard>
 
-          {/* OTHER MILESTONES */}
-          <motion.div className="bento-item col-4" variants={fadeIn} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
-            <div className="stat-val" style={{ color: 'var(--accent-2)', marginBottom: '8px' }}>1st Place</div>
-            <div style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--gray-medium)' }}>SSN Winner</div>
-          </motion.div>
+          {/* 4. GITHUB */}
+          <PlatformCard 
+            title="GitHub" 
+            accent="#a855f7"
+            link="https://github.com/nitish1705"
+          >
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '40px', flexWrap: 'wrap', marginTop: '32px' }}>
+              <div className="premium-stat-row" style={{ flex: 1.5 }}>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">REPOS</div>
+                  <div className="premium-stat-value">{analytics.github?.public_repos || 42}</div>
+                </div>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">COMMITS</div>
+                  <div className="premium-stat-value">850+</div>
+                </div>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">FOLLOWERS</div>
+                  <div className="premium-stat-value">{analytics.github?.followers || 12}</div>
+                </div>
+              </div>
+              <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {['Java', 'Swift', 'Python', 'Dart', 'React', 'Native'].map(tech => (
+                  <span key={tech} className="skill-pill" style={{ fontSize: '12px', padding: '8px 16px', background: 'rgba(255,255,255,0.03)' }}>{tech}</span>
+                ))}
+              </div>
+            </div>
+          </PlatformCard>
 
-          <motion.div className="bento-item col-4" variants={fadeIn} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
-            <div className="stat-val" style={{ color: 'var(--accent-3)', marginBottom: '8px' }}>1100+</div>
-            <div style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--gray-medium)' }}>SkillRack Solved</div>
-          </motion.div>
+          {/* 5. SKILLRACK */}
+          <PlatformCard 
+            title="Skillrack" 
+            accent="#10b981"
+            link="http://www.skillrack.com/faces/resume.xhtml?id=447801&key=nitish1705"
+          >
+            <div style={{ marginTop: '32px', padding: '32px', borderRadius: '24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '32px' }}>
+                <div>
+                  <div style={{ fontSize: '48px', fontWeight: 900, color: 'white' }}>1100+</div>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--accent-3)', letterSpacing: '0.2em' }}>CHALLENGES MASTERED</div>
+                </div>
+                <div style={{ display: 'flex', gap: '40px' }}>
+                   <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: '24px', fontWeight: 800, color: 'white' }}>12+</div>
+                      <div style={{ fontSize: '10px', color: 'var(--gray-medium)', fontWeight: 700 }}>BADGES EARNED</div>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </PlatformCard>
 
-          <motion.div className="bento-item col-4" variants={fadeIn} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
-            <div className="stat-val" style={{ color: '#ffcc00', marginBottom: '8px' }}>679</div>
-            <div style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--gray-medium)' }}>AtCoder Rank</div>
-          </motion.div>
+          {/* 6. ACHIEVEMENTS */}
+          <PlatformCard 
+            title="Achievements" 
+            accent="#fcd34d"
+            link="#"
+          >
+            <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div className="premium-stat-item" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                 <div style={{ fontSize: '24px' }}>🏆</div>
+                 <div>
+                    <div style={{ fontWeight: 800, color: 'white' }}>1st Place — SSN Coding Contest</div>
+                    <div style={{ fontSize: '12px', color: 'var(--gray-medium)' }}>University Level Algorithms Championship</div>
+                 </div>
+              </div>
+              <div className="premium-stat-item" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                 <div style={{ fontSize: '24px' }}>🏆</div>
+                 <div>
+                    <div style={{ fontWeight: 800, color: 'white' }}>1st Place — Loyola Coding Contest</div>
+                    <div style={{ fontSize: '12px', color: 'var(--gray-medium)' }}>State Level Programming Excellence</div>
+                 </div>
+              </div>
+            </div>
+          </PlatformCard>
 
-        </motion.div>
+        </div>
+
+        {/* SUMMARY STRIP */}
+        <div className="premium-summary-strip">
+          <span className="summary-value">{totalImpact.solved}</span> PROBLEMS SOLVED
+          <span className="summary-dot">•</span>
+          <span className="summary-value">{totalImpact.contests}</span> CONTESTS
+          <span className="summary-dot">•</span>
+          <span className="summary-value">2</span> CHAMPIONSHIPS
+        </div>
       </section>
 
       {/* CONTACT */}
