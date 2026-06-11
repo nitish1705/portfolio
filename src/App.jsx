@@ -113,7 +113,7 @@ function App() {
     setIsSending(true);
     setStatus('Sending...');
 
-    emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', form.current, 'YOUR_PUBLIC_KEY')
+    emailjs.sendForm('service_5v1vpor', 'template_vfxvv8f', form.current, 'Q90yjPY0QapVFjvO_')
       .then(() => {
           setStatus('Message Sent!');
           setIsSending(false);
@@ -562,11 +562,11 @@ function App() {
               <form ref={form} onSubmit={sendEmail} className="contact-form">
                 <div className="form-group">
                   <label>Name</label>
-                  <input type="text" name="user_name" className="form-input" placeholder="Your Name" required />
+                  <input type="text" name="name" className="form-input" placeholder="Your Name" required />
                 </div>
                 <div className="form-group">
                   <label>Email</label>
-                  <input type="email" name="user_email" className="form-input" placeholder="Your Email" required />
+                  <input type="email" name="email" className="form-input" placeholder="Your Email" required />
                 </div>
                 <div className="form-group">
                   <label>Message</label>
