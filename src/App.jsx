@@ -5,7 +5,7 @@ import {
   PieChart, Pie, Cell, XAxis, YAxis, AreaChart, Area
 } from 'recharts';
 import emailjs from '@emailjs/browser';
-import heroImage from './assets/hero.png';
+import heroImage from './assets/Nitish.png';
 import './index.css';
 
 // --- ICONS (SVG) ---
@@ -358,8 +358,8 @@ function App() {
                   <div className="premium-stat-value">#144k</div>
                 </div>
                 <div className="premium-stat-item">
-                  <div className="premium-stat-label">STREAK</div>
-                  <div className="premium-stat-value">180d 🔥</div>
+                  <div className="premium-stat-label">TOTAL ACTIVE DAYS</div>
+                  <div className="premium-stat-value">191 DAYS</div>
                 </div>
               </div>
             </div>
