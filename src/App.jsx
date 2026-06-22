@@ -50,12 +50,7 @@ const fetchAnalyticsData = async () => {
 
 // --- COMPONENTS ---
 const PlatformCard = ({ title, accent, children, link }) => (
-  <motion.div 
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    className="premium-platform-card"
-  >
+  <div className="premium-platform-card">
     <div className="premium-card-header">
       <div className="premium-platform-info">
         <div>
@@ -69,7 +64,7 @@ const PlatformCard = ({ title, accent, children, link }) => (
       </div>
     </div>
     {children}
-  </motion.div>
+  </div>
 );
 
 const fadeIn = {
@@ -140,27 +135,47 @@ function App() {
       cgpa: "8.55 / 10"
     },
     arsenal: [
-      { id: "01", category: "Languages", items: "Python / Java / Swift / C / SQL" },
-      { id: "02", category: "Frontend", items: "React / HTML5 / CSS3 / Tailwind / NativeWind" },
-      { id: "03", category: "Backend", items: "Node.js / Express / MySQL / REST APIs / PHP" },
-      { id: "04", category: "Mobile Dev", items: "SwiftUI / SwiftData / React Native / Android SDK" },
-      { id: "05", category: "Tools & Frameworks", items: "Git / VS Code / Xcode / Android Studio / Figma" }
+      { id: "01", category: "Languages", items: "Swift / Java / Python / C / SQL", col: "col-4" },
+      { id: "02", category: "Mobile Dev", items: "SwiftUI / UIKit / SwiftData / Core Data / React Native / Android SDK", col: "col-8" },
+      { id: "03", category: "Architecture & Concurrency", items: "MVVM / Combine / Swift Concurrency (Async/Await) / REST APIs", col: "col-4" },
+      { id: "04", category: "Frontend & Web", items: "React / HTML5 / CSS3 / Tailwind / Node.js", col: "col-4" },
+      { id: "05", category: "Tools & Ecosystem", items: "Git / Xcode / VS Code / Android Studio / Figma", col: "col-4" }
     ],
     marquee: ["SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Java", "React Native", "SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Java", "React Native"],
     experience: [
-      { role: "Internship Experience", org: "Supraja Technologies", date: "Jul 2025" }
+      {
+        role: "Software Engineering Intern",
+        org: "Supraja Technologies",
+        date: "Jul 2025",
+        desc: "Completed an academic internship program focusing on software development fundamentals, full-stack application concepts, and secure programming workflows.",
+        highlights: [
+          "Gained hands-on exposure to software engineering lifecycles and structured collaboration using Git/GitHub",
+          "Explored database architectures, API designs, and frontend rendering systems to build full-stack interfaces",
+          "Implemented secure coding paradigms in aligning with modern system-level application requirements"
+        ]
+      }
     ],
     projects: [
       {
         name: "MultiClips",
-        desc: "Native macOS clipboard manager utilizing Swift and SwiftUI to monitor, capture, and organize system-wide clipboard events with SwiftData persistence.",
-        tech: ["Swift", "SwiftUI", "SwiftData"],
+        desc: "A native macOS clipboard manager built with Swift and SwiftUI to monitor, capture, and organize system-wide clipboard events with SwiftData persistence.",
+        highlights: [
+          "Integrated Cocoa Pasteboard APIs to monitor and capture system-wide clipboard events in the background",
+          "Engineered high-performance local persistence using SwiftData with optimized querying and indexing",
+          "Designed a modern native status bar menu and HUD interface following Apple Human Interface Guidelines"
+        ],
+        tech: ["Swift", "SwiftUI", "SwiftData", "AppKit", "macOS"],
         link: "https://github.com/nitish1705"
       },
       {
         name: "GPACALC",
-        desc: "Dynamic academic utility for iOS to compute and track semester-wise GPA/CGPA with real-time recalculations and modular component architecture.",
-        tech: ["SwiftUI", "SwiftData", "iOS"],
+        desc: "A dynamic and modular academic utility for iOS to compute and track semester-wise GPA/CGPA with real-time recalculations.",
+        highlights: [
+          "Implemented local persistence using SwiftData to store, update, and recalculate academic data dynamically",
+          "Developed modular SwiftUI component structures with clean state propagation",
+          "Polished the iOS layout with responsive grid layouts, system haptic feedbacks, and dark-mode optimization"
+        ],
+        tech: ["SwiftUI", "SwiftData", "Swift Concurrency", "iOS"],
         link: "https://github.com/nitish1705"
       }
     ],
@@ -235,20 +250,14 @@ function App() {
       {/* ABOUT SECTION */}
       <section id="about">
         <div className="section-label">About Me</div>
-        <motion.div 
-          className="about-layout"
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true }}
-          variants={stagger}
-        >
-          <motion.div variants={fadeIn} className="about-photo-card">
+        <div className="about-layout">
+          <div className="about-photo-card">
             <div className="about-photo-frame">
               <img src={heroImage} alt={data.name} className="about-photo" />
             </div>
-          </motion.div>
+          </div>
           
-          <motion.div variants={fadeIn} className="about-description">
+          <div className="about-description">
             <h3>The Story</h3>
             <p style={{ fontSize: '18px', lineHeight: '1.8', color: 'var(--gray-medium)' }}>
               {data.about}
@@ -261,52 +270,86 @@ function App() {
                 <p style={{ color: 'var(--gray-medium)', fontSize: '14px', marginTop: '4px' }}>Maintaining excellence at SJIT</p>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* TECHNICAL ARSENAL */}
+      <section id="arsenal">
+        <div className="section-label">Technical Arsenal</div>
+        <div className="bento-grid">
+          {data.arsenal.map((skill) => (
+            <div key={skill.id} className={`bento-item ${skill.col}`} style={{ padding: '28px' }}>
+              <span className="side-label" style={{ marginBottom: '14px', display: 'block', color: 'var(--accent-1)' }}>{skill.category}</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {skill.items.split(' / ').map((item) => (
+                  <span key={item} className="tag" style={{ fontSize: '12px', padding: '6px 12px' }}>{item}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* PROJECTS SECTION */}
       <section id="projects">
         <div className="section-label">Selected Works</div>
-        <motion.div className="bento-grid" initial="initial" whileInView="animate" variants={stagger} viewport={{ once: true }}>
+        <div className="bento-grid">
           {data.projects.map((p, i) => (
-            <motion.div key={i} className="bento-item col-6" variants={fadeIn}>
+            <div key={i} className="bento-item col-6">
               <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
                 {p.tech.map(t => <span key={t} className="tag">{t}</span>)}
               </div>
               <h3>{p.name}</h3>
-              <p style={{ marginBottom: '20px' }}>{p.desc}</p>
+              <p style={{ marginBottom: '15px' }}>{p.desc}</p>
+              {p.highlights && (
+                <ul style={{ paddingLeft: '20px', marginBottom: '25px', color: 'var(--gray-medium)', fontSize: '14px', lineHeight: '1.6' }}>
+                  {p.highlights.map((h, idx) => (
+                    <li key={idx} style={{ marginBottom: '6px' }}>{h}</li>
+                  ))}
+                </ul>
+              )}
                <a href={p.link} target="_blank" rel="noreferrer" className="ui-button ui-button--ghost project-link">Explore Code ↗</a>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </section>
 
       {/* EXPERIENCE & CERTIFICATIONS */}
       <section id="experience">
         <div className="section-label">Professional Journey</div>
-        <motion.div className="bento-grid" initial="initial" whileInView="animate" variants={stagger} viewport={{ once: true }}>
-          <motion.div className="bento-item col-8" variants={fadeIn}>
+        <div className="bento-grid">
+          <div className="bento-item col-8">
             <h3>Experience</h3>
             {data.experience.map((exp, i) => (
-              <div key={i} className="exp-row">
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '18px' }}>{exp.role}</div>
-                  <div style={{ color: 'var(--gray-medium)' }}>{exp.org}</div>
+              <div key={i} style={{ marginBottom: '24px' }}>
+                <div className="exp-row" style={{ marginBottom: '8px' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '18px' }}>{exp.role}</div>
+                    <div style={{ color: 'var(--gray-medium)' }}>{exp.org}</div>
+                  </div>
+                  <div className="accent-text">{exp.date}</div>
                 </div>
-                <div className="accent-text">{exp.date}</div>
+                {exp.desc && <p style={{ fontSize: '14px', color: 'var(--gray-medium)', marginBottom: '10px' }}>{exp.desc}</p>}
+                {exp.highlights && (
+                  <ul style={{ paddingLeft: '20px', color: 'var(--gray-medium)', fontSize: '14px', lineHeight: '1.6' }}>
+                    {exp.highlights.map((h, idx) => (
+                      <li key={idx} style={{ marginBottom: '4px' }}>{h}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ))}
-          </motion.div>
-          <motion.div className="bento-item col-4" variants={fadeIn}>
+          </div>
+          <div className="bento-item col-4">
             <h3>Certifications</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
               {data.certifications.map(c => (
                 <div key={c} style={{ fontSize: '14px', borderLeft: '2px solid var(--accent-3)', paddingLeft: '12px' }}>{c}</div>
               ))}
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* MILESTONES & METRICS - PREMIUM VERTICAL DASHBOARD */}
@@ -504,13 +547,7 @@ function App() {
       <div className="contact-section-wrapper">
         <section id="contact" style={{ paddingTop: 0 }}>
           <div className="contact-container">
-            <motion.div 
-              className="contact-left"
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true }}
-              variants={fadeIn}
-            >
+            <div className="contact-left">
               <h2 className="contact-quote">
                 Have a thoughtful idea in mind? <br />
                 <span style={{ color: 'var(--accent-1)' }}>Let's bring it to life.</span>
@@ -551,14 +588,9 @@ function App() {
                   </a>
                 ))}
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              initial="initial" 
-              whileInView="animate" 
-              variants={fadeIn} 
-              viewport={{ once: true }}
-            >
+            <div>
               <form ref={form} onSubmit={sendEmail} className="contact-form">
                 <div className="form-group">
                   <label>Name</label>
@@ -576,7 +608,7 @@ function App() {
                   {status || "Send Message"}
                 </button>
               </form>
-            </motion.div>
+            </div>
           </div>
         </section>
       </div>
