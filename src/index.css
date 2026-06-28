@@ -160,16 +160,28 @@
 }
 
 
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   background-color: var(--bg);
   color: var(--fg);
   font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
-/* Sublte Background elements */
+@media (max-width: 1024px) {
+  html, body {
+    height: auto;
+    overflow: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* Subtle Background elements */
 .bg-glow {
   position: fixed;
   top: 0;
@@ -180,15 +192,43 @@ body {
   background: var(--bg);
 }
 
-.container {
+.snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.snap-section {
+  scroll-snap-align: start;
+  min-height: 100vh;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 24px 100px;
+  padding: 80px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .snap-container {
+    height: auto;
+    overflow-y: visible;
+    scroll-snap-type: none;
+  }
+  .snap-section {
+    min-height: auto;
+    scroll-snap-align: none;
+    padding: 60px 24px;
+  }
 }
 
 /* Sections */
 section {
-  padding-top: 100px;
+  padding-top: 0 !important;
 }
 
 .section-label {
@@ -886,5 +926,45 @@ h3 {
   .page-footer { flex-direction: column; align-items: flex-start; }
   .top-bar { flex-direction: column; align-items: flex-start; }
   .role-bar { flex-wrap: wrap; }
+}
+
+/* Dynamic Segmented Section Indicator Bar */
+.section-indicator-bar {
+  position: fixed;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  z-index: 1000;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.indicator-segment {
+  width: 16px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+}
+
+.indicator-segment:hover {
+  width: 24px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.indicator-segment.active {
+  width: 32px;
+  background: var(--accent-1);
+}
+
+/* Hide on mobile layout since scroll snapping is disabled */
+@media (max-width: 1024px) {
+  .section-indicator-bar {
+    display: none;
+  }
 }
 
