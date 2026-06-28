@@ -1,9 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LineChart, Line, ResponsiveContainer, Tooltip as ChartTooltip, 
-  PieChart, Pie, Cell, XAxis, YAxis, AreaChart, Area
-} from 'recharts';
+
 import emailjs from '@emailjs/browser';
 import heroImage from './assets/Nitish.png';
 import './index.css';
@@ -20,7 +17,7 @@ const Icons = {
 };
 
 // --- CACHING & FETCHING ---
-const CACHE_KEY = 'portfolio_analytics_cache_v3';
+const CACHE_KEY = 'portfolio_analytics_cache_v5';
 const CACHE_DURATION = 12 * 60 * 60 * 1000;
 
 const fetchAnalyticsData = async () => {
@@ -33,15 +30,36 @@ const fetchAnalyticsData = async () => {
   const results = { leetcode: null, codeforces: null, atcoder: null, github: null };
   try {
     const [lc, cf, ac, gh] = await Promise.all([
-      fetch('https://alfa-leetcode-api.onrender.com/Nitish_17_M/solved').then(res => res.json()).catch(() => null),
+      fetch('https://leetcode-api-pied.vercel.app/user/Nitish_17_M').then(res => res.json()).catch(() => null),
       fetch('https://codeforces.com/api/user.rating?handle=Ninja_1705').then(res => res.json()).catch(() => null),
-      fetch('https://kenkoooo.com/atcoder/atcoder-api/v3/user/user_rank?user=Nitish_M').then(res => res.json()).catch(() => null),
+      fetch('https://api.allorigins.win/raw?url=https://atcoder.jp/users/Nitish_M/history/json').then(res => res.json()).catch(() => null),
       fetch('https://api.github.com/users/nitish1705').then(res => res.json()).catch(() => null)
     ]);
-    results.leetcode = lc;
-    results.codeforces = cf?.status === "OK" ? cf.result : null;
-    results.atcoder = ac;
-    results.github = gh;
+    
+    results.leetcode = lc?.submitStats?.acSubmissionNum ? {
+      totalSolved: lc.submitStats.acSubmissionNum[0].count,
+      easySolved: lc.submitStats.acSubmissionNum[1].count,
+      mediumSolved: lc.submitStats.acSubmissionNum[2].count,
+      hardSolved: lc.submitStats.acSubmissionNum[3].count,
+      ranking: lc.profile?.ranking ? `#${Math.round(lc.profile.ranking / 1000)}k` : "#140k"
+    } : null;
+
+    results.codeforces = cf?.status === "OK" ? {
+      current: cf.result.length ? cf.result[cf.result.length - 1].newRating : 1163,
+      peak: cf.result.length ? Math.max(...cf.result.map(r => r.newRating)) : 1209,
+      contests: cf.result.length || 21
+    } : null;
+
+    results.atcoder = (ac && ac.length) ? {
+      current: ac[ac.length - 1].NewRating,
+      peak: Math.max(...ac.map(c => c.NewRating)),
+      contests: ac.length
+    } : null;
+
+    results.github = gh ? {
+      public_repos: gh.public_repos,
+      followers: gh.followers
+    } : null;
   } catch (err) { console.error(err); }
 
   localStorage.setItem(CACHE_KEY, JSON.stringify({ data: results, timestamp: Date.now() }));
@@ -54,7 +72,7 @@ const PlatformCard = ({ title, accent, children, link }) => (
     <div className="premium-card-header">
       <div className="premium-platform-info">
         <div>
-          <h3 style={{ margin: 0, fontSize: '24px' }}>{title}</h3>
+          <h3 style={{ margin: 0, fontSize: '24px', borderLeft: `3px solid ${accent}`, paddingLeft: '12px', lineHeight: '1.1' }}>{title}</h3>
         </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -91,10 +109,15 @@ function App() {
     fetchAnalyticsData().then(data => setAnalytics(data));
   }, []);
 
-  const totalImpact = useMemo(() => ({
-    solved: (analytics.leetcode?.totalSolved || 573) + (analytics.codeforces?.length ? 210 : 0) + 1100,
-    contests: 85
-  }), [analytics]);
+  const totalImpact = useMemo(() => {
+    const leetcodeSolved = analytics.leetcode?.totalSolved || 585;
+    const codeforcesSolved = 210;
+    const skillrackSolved = 1100;
+    return {
+      solved: leetcodeSolved + codeforcesSolved + skillrackSolved,
+      contests: 85
+    };
+  }, [analytics]);
 
 
   const copyToClipboard = () => {
@@ -127,7 +150,7 @@ function App() {
     headline: "I build polished mobile and web experiences with a focus on clean systems and thoughtful UI.",
     tagline: "Final Year Student",
     location: "Chennai, India",
-    about: "I am a final year Computer Science student at St. Joseph’s Institute of Technology who enjoys building apps and learning new frameworks as I go. My focus is on turning ideas into clean, useful products with strong fundamentals in programming, mobile development, web development, and product thinking.",
+    about: "I am a final year Computer Science student at St. Joseph’s Institute of Technology who is deeply inspired by how Apple designs software. To me, a great app doesn't just look premium—it feels alive. I am obsessed with building fluid, responsive UIs and crafting seamless app navigation where everything works so naturally that users interact with it without even realizing there is an app in the way. Driven by my execution motto, 'Do now, rest later!', I carry this same high energy when the screen is closed. My life is constantly filled with connection and people—whether I'm chatting with my parents at home, spending time with my friends at college, or hitting the badminton court for a fast-paced game.",
     education: {
       degree: "B.E. Computer Science Engineering",
       org: "St. Joseph’s Institute of Technology",
@@ -180,11 +203,11 @@ function App() {
       }
     ],
     achievements: [
-      { label: "LeetCode Solved", value: "500+", color: "var(--accent-1)", link: "https://leetcode.com/u/Nitish_17_M/" },
+      { label: "LeetCode Solved", value: "585", color: "var(--accent-1)", link: "https://leetcode.com/u/Nitish_17_M/" },
       { label: "SSN Winner", value: "1st Place", color: "var(--accent-2)", link: "https://github.com/nitish1705" },
       { label: "SkillRack", value: "1100+", color: "var(--accent-3)", link: "http://www.skillrack.com/faces/resume.xhtml?id=447801&key=nitish1705" },
       { label: "Codeforces", value: "1209", color: "#66ff66", link: "https://codeforces.com/profile/Ninja_1705" },
-      { label: "AtCoder Rank", value: "679", color: "#ffcc00", link: "https://atcoder.jp/users/Nitish_M" }
+      { label: "AtCoder Rating", value: "789", color: "#ffcc00", link: "https://atcoder.jp/users/Nitish_M" }
     ],
     certifications: [
       "NPTEL: Python for Data Science",
@@ -204,18 +227,16 @@ function App() {
       <div className="bg-glow"></div>
 
       {/* EDITORIAL HEADER */}
-      <header className="editorial-header">
-        <div className="top-bar">
-          <div className="portfolio-tag">PORTFOLIO / {new Date().getFullYear()}</div>
-          <a href={resumeUrl} download="Nitish_Resume.pdf" className="ui-button ui-button--ghost top-download">
+      <header className="editorial-header" style={{ paddingTop: '24px' }}>
+        <div className="role-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+            <span className="location-tag">{data.location}</span>
+            <div className="role-dot"></div>
+            <span style={{ fontSize: '11px', letterSpacing: '0.08em' }}>APPLE PLATFORM ENGINEER • SOFTWARE ENGINEER • COMPETITIVE PROGRAMMER</span>
+          </div>
+          <a href={resumeUrl} download="Nitish_Resume.pdf" className="ui-button ui-button--ghost" style={{ padding: '8px 16px', fontSize: '12px', borderRadius: '8px' }}>
             Download CV
           </a>
-        </div>
-        <div className="header-divider"></div>
-        <div className="role-bar">
-          <span className="location-tag">{data.location}</span>
-          <div className="role-dot"></div>
-          <span>APPLE PLATFORM ENGINEER • SOFTWARE ENGINEER • COMPETITIVE PROGRAMMER</span>
         </div>
       </header>
 
@@ -264,10 +285,11 @@ function App() {
             </p>
             
             <div className="bento-grid" style={{ marginTop: '20px' }}>
+              {/* Academics Card */}
               <div className="bento-item col-12" style={{ padding: '24px' }}>
-                <span className="side-label" style={{ marginBottom: '8px', display: 'block' }}>Current GPA</span>
-                <div className="stat-val" style={{ fontSize: '36px' }}>{data.education.cgpa}</div>
-                <p style={{ color: 'var(--gray-medium)', fontSize: '14px', marginTop: '4px' }}>Maintaining excellence at SJIT</p>
+                <span className="side-label" style={{ marginBottom: '8px', display: 'block', color: 'var(--accent-1)' }}>Academics</span>
+                <div className="stat-val" style={{ fontSize: '32px' }}>{data.education.cgpa}</div>
+                <p style={{ color: 'var(--gray-medium)', fontSize: '13px', marginTop: '4px' }}>Maintaining excellence @ SJIT</p>
               </div>
             </div>
           </div>
@@ -277,11 +299,11 @@ function App() {
       {/* TECHNICAL ARSENAL */}
       <section id="arsenal">
         <div className="section-label">Technical Arsenal</div>
-        <div className="bento-grid">
+        <div className="arsenal-list">
           {data.arsenal.map((skill) => (
-            <div key={skill.id} className={`bento-item ${skill.col}`} style={{ padding: '28px' }}>
-              <span className="side-label" style={{ marginBottom: '14px', display: 'block', color: 'var(--accent-1)' }}>{skill.category}</span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <div key={skill.id} className="arsenal-row">
+              <span className="arsenal-category">{skill.category}</span>
+              <div className="arsenal-items">
                 {skill.items.split(' / ').map((item) => (
                   <span key={item} className="tag" style={{ fontSize: '12px', padding: '6px 12px' }}>{item}</span>
                 ))}
@@ -364,41 +386,33 @@ function App() {
             accent="#00e5ff"
             link="https://leetcode.com/u/Nitish_17_M/"
           >
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '60px', flexWrap: 'wrap', marginTop: '32px' }}>
-              <div style={{ width: '180px', height: '180px', position: 'relative' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={[
-                        { name: 'Easy', value: analytics.leetcode?.easySolved || 314 },
-                        { name: 'Medium', value: analytics.leetcode?.mediumSolved || 234 },
-                        { name: 'Hard', value: analytics.leetcode?.hardSolved || 25 },
-                      ]}
-                      innerRadius={70}
-                      outerRadius={90}
-                      paddingAngle={8}
-                      dataKey="value"
-                      stroke="none"
-                    >
-                      <Cell fill="#00e5ff" />
-                      <Cell fill="#f59e0b" />
-                      <Cell fill="#ec4899" />
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                  <div style={{ fontSize: '32px', fontWeight: 900, color: 'white' }}>{analytics.leetcode?.totalSolved || 573}</div>
-                  <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--gray-medium)', letterSpacing: '0.1em' }}>SOLVED</div>
+            <div style={{ marginTop: '32px' }}>
+              <div className="premium-stat-row">
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">TOTAL SOLVED</div>
+                  <div className="premium-stat-value" style={{ color: 'white' }}>{analytics.leetcode?.totalSolved || 585}</div>
+                </div>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">EASY</div>
+                  <div className="premium-stat-value" style={{ color: '#00e5ff' }}>{analytics.leetcode?.easySolved || 317}</div>
+                </div>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">MEDIUM</div>
+                  <div className="premium-stat-value" style={{ color: '#f59e0b' }}>{analytics.leetcode?.mediumSolved || 240}</div>
+                </div>
+                <div className="premium-stat-item">
+                  <div className="premium-stat-label">HARD</div>
+                  <div className="premium-stat-value" style={{ color: '#ec4899' }}>{analytics.leetcode?.hardSolved || 28}</div>
                 </div>
               </div>
-              <div className="premium-stat-row" style={{ flex: 1 }}>
+              <div className="premium-stat-row" style={{ marginTop: '24px' }}>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">ACCEPTANCE</div>
                   <div className="premium-stat-value">72.4%</div>
                 </div>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">RANKING</div>
-                  <div className="premium-stat-value">#144k</div>
+                  <div className="premium-stat-value">{analytics.leetcode?.ranking || "#141k"}</div>
                 </div>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">TOTAL ACTIVE DAYS</div>
@@ -418,15 +432,15 @@ function App() {
               <div className="premium-stat-row">
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">CURRENT</div>
-                  <div className="premium-stat-value">1163</div>
+                  <div className="premium-stat-value">{analytics.codeforces?.current || 1163}</div>
                 </div>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">PEAK</div>
-                  <div className="premium-stat-value">1209</div>
+                  <div className="premium-stat-value">{analytics.codeforces?.peak || 1209}</div>
                 </div>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">CONTESTS</div>
-                  <div className="premium-stat-value">21 Played</div>
+                  <div className="premium-stat-value">{analytics.codeforces?.contests || 21} Played</div>
                 </div>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">GLOBAL RANK</div>
@@ -445,13 +459,13 @@ function App() {
             <div className="premium-stat-row" style={{ marginTop: '32px' }}>
               <div className="premium-stat-item">
                 <div className="premium-stat-label">RATING</div>
-                <div className="premium-stat-value" style={{ fontSize: '32px' }}>679</div>
-                <div style={{ fontSize: '11px', color: 'var(--accent-4)', fontWeight: 700, marginTop: '4px' }}>Rank: #4205</div>
+                <div className="premium-stat-value" style={{ fontSize: '32px' }}>{analytics.atcoder?.current || 789}</div>
+                <div style={{ fontSize: '11px', color: 'var(--accent-4)', fontWeight: 700, marginTop: '4px' }}>Rank: #22118</div>
               </div>
               <div className="premium-stat-item">
                 <div className="premium-stat-label">PEAK RATING</div>
-                <div className="premium-stat-value" style={{ fontSize: '32px' }}>757</div>
-                <div style={{ fontSize: '11px', color: 'var(--gray-medium)', fontWeight: 700, marginTop: '4px' }}>Top 12% Active</div>
+                <div className="premium-stat-value" style={{ fontSize: '32px' }}>{analytics.atcoder?.peak || 789}</div>
+                <div style={{ fontSize: '11px', color: 'var(--gray-medium)', fontWeight: 700, marginTop: '4px' }}>Top 17.28% Active</div>
               </div>
             </div>
           </PlatformCard>
@@ -466,7 +480,7 @@ function App() {
               <div className="premium-stat-row" style={{ flex: 1.5 }}>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">REPOS</div>
-                  <div className="premium-stat-value">{analytics.github?.public_repos || 42}</div>
+                  <div className="premium-stat-value">{analytics.github?.public_repos || 24}</div>
                 </div>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">COMMITS</div>
@@ -474,7 +488,7 @@ function App() {
                 </div>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">FOLLOWERS</div>
-                  <div className="premium-stat-value">{analytics.github?.followers || 12}</div>
+                  <div className="premium-stat-value">{analytics.github?.followers || 8}</div>
                 </div>
               </div>
               <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
@@ -554,7 +568,14 @@ function App() {
               </h2>
               
               <div className="contact-links-grid">
-                <a href={`mailto:${emailAddress}`} className="contact-link-item">
+                <a 
+                  href={`mailto:${emailAddress}`} 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    copyToClipboard();
+                  }}
+                  className="contact-link-item"
+                >
                   <div className="contact-link-header">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                     <span>EMAIL</span>
@@ -597,8 +618,8 @@ function App() {
                   <input type="text" name="name" className="form-input" placeholder="Your Name" required />
                 </div>
                 <div className="form-group">
-                  <label>Email</label>
-                  <input type="email" name="email" className="form-input" placeholder="Your Email" required />
+                  <label>Your Email Address</label>
+                  <input type="email" name="email" className="form-input" placeholder="email@example.com" required />
                 </div>
                 <div className="form-group">
                   <label>Message</label>
@@ -628,7 +649,6 @@ function App() {
 
       <footer className="page-footer">
         <div className="footer-brand">
-          <div className="portfolio-tag">PORTFOLIO / {new Date().getFullYear()}</div>
           <div style={{ color: 'white', fontSize: '18px', fontWeight: 700 }}>{data.name}</div>
         </div>
 
@@ -644,7 +664,7 @@ function App() {
         </div>
 
         <div style={{ color: 'var(--gray-medium)', fontSize: '14px' }}>
-          © {new Date().getFullYear()} {data.name} • Designed for Impact
+          © {new Date().getFullYear()} {data.name}
         </div>
       </footer>
     </div>

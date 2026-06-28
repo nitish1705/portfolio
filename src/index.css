@@ -329,13 +329,42 @@ h3 {
 }
 
 /* My Arsenal Section */
-.arsenal-header {
+.arsenal-list {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid var(--glass-border);
+}
+
+.arsenal-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  align-items: center;
+  padding: 32px 0;
   border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 20px;
-  margin-bottom: 40px;
+}
+
+.arsenal-category {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-1);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.arsenal-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .arsenal-row {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px 0;
+  }
 }
 
 .arsenal-num {
