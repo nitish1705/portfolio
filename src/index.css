@@ -5,11 +5,11 @@
   --gray-dark: #252526;
   --gray-medium: #858585;
   --gray-light: #333333;
-  --accent-1: #4fc1ff;
-  --accent-2: #3794ff;
-  --accent-3: #b5cea8;
-  --accent-gradient: #3794ff;
-  --vibrant-gradient: #4fc1ff;
+  --accent-1: #0a84ff;
+  --accent-2: #0a84ff;
+  --accent-3: #0a84ff;
+  --accent-gradient: #0a84ff;
+  --vibrant-gradient: #0a84ff;
   --glass: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-hover: rgba(255, 255, 255, 0.06);

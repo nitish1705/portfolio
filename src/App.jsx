@@ -239,10 +239,10 @@ function App() {
     ],
     achievements: [
       { label: "LeetCode Solved", value: "585", color: "var(--accent-1)", link: "https://leetcode.com/u/Nitish_17_M/" },
-      { label: "SSN Winner", value: "1st Place", color: "var(--accent-2)", link: "https://github.com/nitish1705" },
-      { label: "SkillRack", value: "1100+", color: "var(--accent-3)", link: "http://www.skillrack.com/faces/resume.xhtml?id=447801&key=nitish1705" },
-      { label: "Codeforces", value: "1209", color: "#66ff66", link: "https://codeforces.com/profile/Ninja_1705" },
-      { label: "AtCoder Rating", value: "789", color: "#ffcc00", link: "https://atcoder.jp/users/Nitish_M" }
+      { label: "SSN Winner", value: "1st Place", color: "var(--accent-1)", link: "https://github.com/nitish1705" },
+      { label: "SkillRack", value: "1100+", color: "var(--accent-1)", link: "http://www.skillrack.com/faces/resume.xhtml?id=447801&key=nitish1705" },
+      { label: "Codeforces", value: "1209", color: "var(--accent-1)", link: "https://codeforces.com/profile/Ninja_1705" },
+      { label: "AtCoder Rating", value: "789", color: "var(--accent-1)", link: "https://atcoder.jp/users/Nitish_M" }
     ],
     certifications: [
       "NPTEL: Python for Data Science",
@@ -444,7 +444,7 @@ function App() {
             {/* 1. LEETCODE */}
             <PlatformCard 
               title="LeetCode" 
-              accent="#00e5ff"
+              accent="var(--accent-1)"
               link="https://leetcode.com/u/Nitish_17_M/"
             >
               <div style={{ marginTop: '32px' }}>
@@ -486,7 +486,7 @@ function App() {
             {/* 2. CODEFORCES */}
             <PlatformCard 
               title="Codeforces" 
-              accent="#3b82f6"
+              accent="var(--accent-1)"
               link="https://codeforces.com/profile/Ninja_1705"
             >
               <div style={{ marginTop: '32px' }}>
@@ -514,14 +514,14 @@ function App() {
             {/* 3. ATCODER */}
             <PlatformCard 
               title="AtCoder" 
-              accent="#f59e0b"
+              accent="var(--accent-1)"
               link="https://atcoder.jp/users/Nitish_M"
             >
               <div className="premium-stat-row" style={{ marginTop: '32px' }}>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">RATING</div>
                   <div className="premium-stat-value" style={{ fontSize: '32px' }}>{analytics.atcoder?.current || 789}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--accent-4)', fontWeight: 700, marginTop: '4px' }}>Rank: #3494</div>
+                  <div style={{ fontSize: '11px', color: 'var(--accent-1)', fontWeight: 700, marginTop: '4px' }}>Rank: #3494</div>
                 </div>
                 <div className="premium-stat-item">
                   <div className="premium-stat-label">PEAK RATING</div>
@@ -534,7 +534,7 @@ function App() {
             {/* 4. GITHUB */}
             <PlatformCard 
               title="GitHub" 
-              accent="#a855f7"
+              accent="var(--accent-1)"
               link="https://github.com/nitish1705"
             >
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '40px', flexWrap: 'wrap', marginTop: '32px' }}>
@@ -563,7 +563,7 @@ function App() {
             {/* 5. SKILLRACK */}
             <PlatformCard 
               title="Skillrack" 
-              accent="#10b981"
+              accent="var(--accent-1)"
               link="http://www.skillrack.com/faces/resume.xhtml?id=447801&key=nitish1705"
             >
               <div style={{ marginTop: '32px', padding: '32px', borderRadius: '24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -585,7 +585,7 @@ function App() {
             {/* 6. ACHIEVEMENTS */}
             <PlatformCard 
               title="Achievements" 
-              accent="#fcd34d"
+              accent="var(--accent-1)"
               link="#"
             >
               <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
