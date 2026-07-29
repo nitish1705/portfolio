@@ -185,7 +185,7 @@ function App() {
     headline: "I build polished mobile and web experiences with a focus on clean systems and thoughtful UI.",
     tagline: "Final Year Student",
     location: "Chennai, India",
-    about: "I am a final year Computer Science student at St. Joseph’s Institute of Technology who is deeply inspired by how Apple designs software. To me, a great app doesn't just look premium—it feels alive. I am obsessed with building fluid, responsive UIs and crafting seamless app navigation where everything works so naturally that users interact with it without even realizing there is an app in the way. Driven by my execution motto, 'Do now, rest later!', I carry this same high energy when the screen is closed. My life is constantly filled with connection and people—whether I'm chatting with my parents at home, spending time with my friends at college, or hitting the badminton court for a fast-paced game.",
+    about: "As a final-year student pursuing a degree in Computer Science from St. Joseph’s Institute of Technology, I have always been inspired by the software design of Apple Inc. In my opinion, a good app not only looks elegant but also gives a living experience. My passion lies in designing fluid and responsive UIs and developing app navigations so well that the user interacts with it seamlessly without even noticing the existence of an app between them. Fuelled by my execution philosophy ‘Do now, rest later!’, I remain equally energetic even off the screen. Life is all about connection and people for me whether I am having chats with my parents at home or playing badminton with my college buddies.",
     education: {
       degree: "B.E. Computer Science Engineering",
       org: "St. Joseph’s Institute of Technology",
@@ -193,13 +193,13 @@ function App() {
       cgpa: "8.55 / 10"
     },
     arsenal: [
-      { id: "01", category: "Languages", items: "Swift / Java / Python / C / SQL", col: "col-4" },
-      { id: "02", category: "Mobile Dev", items: "SwiftUI / UIKit / SwiftData / Core Data / React Native / Android SDK", col: "col-8" },
+      { id: "01", category: "Languages", items: "Swift / Java / Python / Golang / C / SQL", col: "col-6" },
+      { id: "02", category: "Mobile Dev", items: "SwiftUI / UIKit / SwiftData / Core Data / React Native / Android SDK", col: "col-6" },
       { id: "03", category: "Architecture & Concurrency", items: "MVVM / Combine / Swift Concurrency (Async/Await) / REST APIs", col: "col-4" },
       { id: "04", category: "Frontend & Web", items: "React / HTML5 / CSS3 / Tailwind / Node.js", col: "col-4" },
       { id: "05", category: "Tools & Ecosystem", items: "Git / Xcode / VS Code / Android Studio / Figma", col: "col-4" }
     ],
-    marquee: ["SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Java", "React Native", "SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Java", "React Native"],
+    marquee: ["SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Golang", "Java", "React Native", "SwiftUI", "SwiftData", "Xcode", "Git", "Python", "Golang", "Java", "React Native"],
     experience: [
       {
         role: "Software Engineering Intern",
@@ -283,8 +283,6 @@ function App() {
         <header className="editorial-header" style={{ paddingTop: '24px', width: '100%' }}>
           <div className="role-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-              <span className="location-tag">{data.location}</span>
-              <div className="role-dot"></div>
               <span style={{ fontSize: '11px', letterSpacing: '0.08em' }}>APPLE PLATFORM ENGINEER • SOFTWARE ENGINEER • COMPETITIVE PROGRAMMER</span>
             </div>
             <a href={resumeUrl} download="Nitish_Resume.pdf" className="ui-button ui-button--ghost" style={{ padding: '8px 16px', fontSize: '12px', borderRadius: '8px' }}>
@@ -306,7 +304,9 @@ function App() {
             <motion.div variants={fadeIn} className="side-info-list" style={{ marginTop: '20px' }}>
               <div className="side-info-item">
                 <span className="side-label">CURRENTLY</span>
-                <span className="side-value">Final Year Student @ SJIT</span>
+                <span className="side-value">
+                  Final Year Student <a href="https://stjosephstechnology.ac.in/home/" target="_blank" rel="noreferrer" className="sjit-link">@ SJIT</a>
+                </span>
               </div>
               <div className="side-info-item">
                 <span className="side-label">FOCUS</span>
@@ -342,8 +342,9 @@ function App() {
                 {/* Academics Card */}
                 <div className="bento-item col-12" style={{ padding: '24px' }}>
                   <span className="side-label" style={{ marginBottom: '8px', display: 'block', color: 'var(--accent-1)' }}>Academics</span>
-                  <div className="stat-val" style={{ fontSize: '32px' }}>{data.education.cgpa}</div>
-                  <p style={{ color: 'var(--gray-medium)', fontSize: '13px', marginTop: '4px' }}>Maintaining excellence @ SJIT</p>
+                  <div className="stat-val" style={{ fontSize: '32px', display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+                    {data.education.cgpa} <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--gray-medium)', letterSpacing: '0.05em' }}>CGPA</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -355,17 +356,25 @@ function App() {
       <div id="slide-arsenal" className="snap-section">
         <section id="arsenal" style={{ width: '100%' }}>
           <div className="section-label">Technical Arsenal</div>
-          <div className="arsenal-list">
-            {data.arsenal.map((skill) => (
-              <div key={skill.id} className="arsenal-row">
-                <span className="arsenal-category">{skill.category}</span>
-                <div className="arsenal-items">
-                  {skill.items.split(' / ').map((item) => (
-                    <span key={item} className="tag" style={{ fontSize: '12px', padding: '6px 12px' }}>{item}</span>
-                  ))}
+          
+          <div className="arsenal-container">
+            <div className="arsenal-rows-list">
+              {data.arsenal.map((skill) => (
+                <div key={skill.id} className="arsenal-row-item">
+                  <div className="arsenal-category-col">
+                    <span className="arsenal-row-num">{skill.id}</span>
+                    <span className="arsenal-row-title">{skill.category}</span>
+                  </div>
+                  <div className="arsenal-skills-col">
+                    {skill.items.split(' / ').map((item) => (
+                      <span key={item} className="arsenal-chip">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
       </div>
